@@ -2,7 +2,9 @@ package com.example.productservice.command;
 
 import com.example.productservice.core.event.ProductCreatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
 
@@ -34,6 +36,16 @@ public class ProductAggregate {
         // ส่งเข้า event bus
         ProductCreatedEvent event = new ProductCreatedEvent();
         BeanUtils.copyProperties(command, event);
+        AggregateLifecycle.apply(event);
+    }
+
+    @EventSourcingHandler
+    public void on(ProductCreatedEvent event){
+        this.productId = event.getProductId();
+        this.title = event.getTitle();
+        this.price = event.getPrice();
+        this.quantity = event.getQuantity();
+        System.out.println(this.title);
     }
 
 }
